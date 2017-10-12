@@ -1,5 +1,5 @@
 # CK_Project
-install firefox
+install firefox,
 download
 https://github.com/mozilla/geckodriver/releases
 
