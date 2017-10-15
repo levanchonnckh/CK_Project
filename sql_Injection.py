@@ -15,6 +15,7 @@ from bs4 import BeautifulSoup
 import threading
 import introduce
 import xss
+import detect
 
 sqlerrors = {'MySQL': 'error in your SQL syntax'}
 
@@ -46,6 +47,42 @@ def login():
     dataForm = {'login': 'bee', 'password': 'bug', 'security_level': 0, 'form': 'submit'}
     _session.post ('http://192.168.141.145/bWAPP/login.php', data=dataForm)
     print colorama.Fore.GREEN+"[*] -> login...done" + colorama.Fore.WHITE
+
+def loginDVWA():
+    #  get user token
+    urlLogin = 'http://192.168.141.145/login.php'
+    r = _session.get(urlLogin)
+    parseHTML = BeautifulSoup(r.content,"lxml")
+    token = parseHTML.find("input",{"name":"user_token"})['value']
+
+    dataForm = {
+        'username':'admin',
+        'password':'password',
+        'Login':'Login',
+        'user_token':token
+    }
+    _session.post('http://192.168.141.145/login.php', data=dataForm)
+    print colorama.Fore.GREEN + "[*] -> login...done" + colorama.Fore.RESET
+    # print r1.content
+    r1 = _session.get('http://192.168.141.145/security.php')
+    parseHTML = BeautifulSoup((r1.content),"lxml")
+
+    token = parseHTML.find ("input", {"name": "user_token"})['value']
+
+    print colorama.Fore.CYAN +"[!] -> token value: " +token + colorama.Fore.RESET
+
+    postValue = {
+        'security':'low',
+        'seclev_submit':'Submit',
+        'user_token':token
+    }
+
+    r1 = _session.post('http://192.168.141.145/security.php',data=postValue)
+    # print r1.content
+    if "<p>Security level is currently: <em>low</em>.<p>" in r1.content:
+        print colorama.Fore.CYAN+"[!] -> Security level is currently: low." +colorama.Fore.RESET
+
+
 
 def getFormFrom_Url(urlInput,payload):
     # xss
@@ -149,24 +186,30 @@ def sqlBlind_Contenbase(host):
         source = _session.get(host1, timeout=5).text
         source1 = _session.get(host2,timeout=5).text
         if source!=source1:
-            print colorama.Fore.RED + "[!] -> Detected SQL Injection "+host1+ colorama.Fore.RESET
+            print colorama.Fore.RED + "[!] -> Detected SQL Injection "+ host1+ colorama.Fore.RESET
+            ktD = raw_input(colorama.Fore.LIGHTYELLOW_EX+"[!] -> Dump database(y/n): " +colorama.Fore.RESET)
+            if ktD=='y':
+                # print host
+                detect.detect_version(host,_session)
+
         else:
             print colorama.Fore.GREEN+"[*] -> Not SQL Vulnerable"+colorama.Fore.RESET
     except Exception,e:
         print colorama.Back.RED + e.message
 
 
+
+
 def testTimeOut(host):
     timeout = 0
+    t0 = time.time()
+    try:
+        r = _session.get (host, verify=False, timeout=x)
+        if r.status_code == 200:
+            timeout = time.time()-t0
+    except Exception, e:
+        pass
 
-    for x in xrange (1, 10):
-        try:
-            r = _session.get (host, verify=False, timeout=x)
-            if r.status_code == 200:
-                timeout = x
-                break
-        except Exception, e:
-            pass
     return timeout
 
 def animate():
@@ -233,7 +276,8 @@ if __name__ == '__main__':
     _url = raw_input("[!] -> inpur url: ")
     ktlogin = raw_input("[!] -> do you want to login (y/n): ")
     if ktlogin=="y":
-        login()
+        # login()
+        loginDVWA()
     sqlClassic(_url)
     sqlBlind_Contenbase(_url)
     sqlBlind_Timebase(_url)

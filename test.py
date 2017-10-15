@@ -2,12 +2,19 @@ from selenium import webdriver
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
+import colorama
 
 # /Users/lechon/Desktop/geckodriver
 def checkAlert(host,geck):
-    browser = webdriver.Firefox (executable_path=geck)
+    print colorama.Fore.GREEN + "[?] -> Firefox...Running" +colorama.Fore.RESET
+    try:
+        browser = webdriver.Firefox (executable_path=geck)
+    except TimeoutException,e:
+        print colorama.Fore.RED +"[!] -> "+ e.message+ colorama.Fore.RESET
+    print colorama.Fore.GREEN + "[!] -> Firefox...Success"+colorama.Fore.RESET
 
-    kt = raw_input ("login (y/n): ")
+
+    kt = raw_input ("[!] -> Login (y/n): ")
     if kt == 'y':
         browser.get (host)
         # pickle.dump (browser.get_cookies (), open ("QuoraCookies.pkl", "wb"))
@@ -31,8 +38,8 @@ def checkAlert(host,geck):
 
         alert = browser.switch_to.alert.accept ()
         # alert.accept()
-        print "alert accepted"
+        print colorama.Fore.RED + "[!] -> Alert accepted" +colorama.Fore.RESET
         return True
     except TimeoutException:
-        print "no alert"
+        print colorama.Fore.GREEN +"[!] -> No alert" +colorama.Fore.RESET
         return False

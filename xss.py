@@ -260,14 +260,15 @@ def storeXss():
 
 
 if __name__ == '__main__':
-    login()
+    # login()
     brutexss()
 
     stt = 0
     for x in vulArray:
-        print Fore.RED + "[error] " + str(x)
+        print Fore.RED + 30*'-' +" XSS Vulnerable "+30*'-'
+        print Fore.RED + "[!] " + str(x)
         # print x
-    print 20*"-"+" Finish "+20*"-"
+    print 30*"-"+" Finish "+30*"-"
 
     # getFormFrom_Url('http://192.168.141.144/bWAPP/xss_get.php',session,'</script>"><script>prompt(1)</script>')
 
