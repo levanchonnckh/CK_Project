@@ -38,8 +38,8 @@ def checkAlert(host,geck):
 
         alert = browser.switch_to.alert.accept ()
         # alert.accept()
-        print colorama.Fore.RED + "[!] -> Alert accepted" +colorama.Fore.RESET
+        print colorama.Fore.RED + "[!] -> alert accepted"
         return True
     except TimeoutException:
-        print colorama.Fore.GREEN +"[!] -> No alert" +colorama.Fore.RESET
+        print "no alert"
         return False

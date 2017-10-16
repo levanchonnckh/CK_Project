@@ -229,8 +229,10 @@ def open_url(payl):
 
     try:
         r1 = _session.get (payl,verify=False,timeout=10)
-        print colorama.Fore.GREEN + "[*] -> "+str(r1.status_code) +" "+ payl
-
+        if r1.status_code==200:
+            print colorama.Fore.GREEN + "[*] -> "+str(r1.status_code) +" "+ payl +colorama.Fore.RESET
+        else:
+            print colorama.Fore.RED + "[*] -> " + str (r1.status_code) + " " + payl +colorama.Fore.RESET
     except requests.exceptions.Timeout,e:
         print colorama.Fore.RED + 20*'-'+" SQL Vulnerable "+20*'-'
         print str(e.message)
